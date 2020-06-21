@@ -27,6 +27,10 @@ bg_image = pygame.image.load('bg.jpg')
 # Background music
 pygame.mixer.music.load('bgm.wav')
 pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.75)
+
+# SFX
+hitsound = pygame.mixer.Sound('Crash_Steel_Pipe.ogg')
 
 pygame.display.set_caption("총알 피하기")
 
@@ -107,6 +111,7 @@ while running:
         for b in bullets:
             if collision(player, b):
                 gameover = True
+                hitsound.play() #충돌 효과음 재생
                 #time.sleep(2)
                 #running = False
         
