@@ -5,6 +5,7 @@ class Player:
     def __init__(self, x, y):
         self.image = pygame.image.load('player.png')
         self.image = pygame.transform.scale(self.image, (64, 64))
+        self.life = 5 # 생명력
         self.pos = [x, y]
         self.to = [0, 0]
         self.acc = [0, 0]
@@ -14,6 +15,9 @@ class Player:
         self.expl_effect = pygame.image.load('flame.png')
         self.expl_effect = pygame.transform.scale(self.expl_effect, (64, 64))
         self.exploded = False
+
+        #무적
+        self.invinciblity = False
 
     def draw(self, screen):
         
@@ -45,5 +49,14 @@ class Player:
         self.pos[0] = min(max(self.pos[0], 32), width-32)
         self.pos[1] = min(max(self.pos[1], 32), height-32)
 
-    def explode(self): #게임 종료시 호출
-        self.exploded = True
+    # 폭발
+    def explode(self, value):
+        self.exploded = value
+
+    # 무적
+    def invincible(self, value):
+        self.invinciblity = value
+
+    # 생명력 감소
+    def minuslife(self):
+        self.life -= 1

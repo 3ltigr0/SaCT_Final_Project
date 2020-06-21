@@ -31,6 +31,7 @@ pygame.mixer.music.set_volume(0.75)
 
 # SFX
 hitsound = pygame.mixer.Sound('Crash_Steel_Pipe.ogg')
+explodesound = pygame.mixer.Sound('Big_Explosion_Cut_Off.ogg')
 
 pygame.display.set_caption("총알 피하기")
 
@@ -46,6 +47,7 @@ for i in range(10):
     bullets.append(Bullet(0, rnd.random()*HEIGHT, rnd.random()-0.5, rnd.random()-0.5))
 
 time_for_adding_bullets = 0
+time_for_invincible = 0
 
 start_time = time.time()
 
@@ -110,19 +112,35 @@ while running:
         draw_text(txt, 32, (WIDTH/2 - 150, HEIGHT/2 + 50), (255,255,255))
     else:
         score = time.time() - start_time
-        txt = "Time: {:.1f}  Bullets: {}".format(score, len(bullets))
+        txt = "Time: {:.1f}  Bullets: {} Life: {}".format(score, len(bullets), player.life)
         draw_text(txt, 32, (10, 10), (255,255,255))
 
     pygame.display.update() #화면에 새로운 그림을 그린다 (화면을 갱신한다)
 
     if not gameover:
         for b in bullets:
-            if collision(player, b):
+            if collision(player, b) and player.invinciblity == False:
                 hitsound.play() #충돌 효과음 재생
-                player.explode() #폭발
-                gameover = True
+                player.explode(True) #폭발
+                player.minuslife() #생명력 감소
+                player.invincible(True) # 무적
+
+                if player.life == 0:
+                    explodesound.play() #폭발 효과음 재생
+                    gameover = True
                 #time.sleep(2)
                 #running = False
+
+        # 무적    
+        if player.invinciblity == True:
+            time_for_invincible += dt
+
+            if time_for_invincible > 1000: # 1초 후 폭발 효과 지우기
+                player.explode(False)
+
+            if time_for_invincible > 2000:
+                player.invincible(False)
+                time_for_invincible = 0
         
         time_for_adding_bullets += dt
         if time_for_adding_bullets > 1000:
