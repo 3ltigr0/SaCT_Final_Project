@@ -49,8 +49,9 @@ time_for_adding_bullets = 0
 
 start_time = time.time()
 
-bg_pos = 0
-bg_dt = -0.01
+#bg_pos = 0
+#bg_dt = -0.01
+bg_pos = [0 - (bg_image.get_width()-WIDTH)/2, 0 - (bg_image.get_height()-HEIGHT)/2]
 
 #Game Loop
 running = True
@@ -85,9 +86,16 @@ while running:
     # 화면에 검은색 채우기 (RGB - Red, Green, Blue)
     # screen.fill((0, 0, 0))
     
-    bg_pos += bg_dt * dt
-    if bg_image.get_width() + bg_pos - WIDTH <= 0 or bg_pos >= 0: bg_dt *= -1
-    screen.blit(bg_image, (bg_pos, 0))
+    #bg_pos += bg_dt * dt
+    #if bg_image.get_width() + bg_pos - WIDTH <= 0 or bg_pos >= 0: bg_dt *= -1
+    #screen.blit(bg_image, (bg_pos, 0))
+
+    # 배경 그림이 비행기의 움직임에 반응하여 이동
+    bg_pos[0] -= player.to[0] + dt*player.to[0]*0.5
+    bg_pos[1] -= player.to[1] + dt*player.to[1]*0.3
+    bg_pos[0] = min(max(bg_pos[0], 0-(bg_image.get_width()-WIDTH)), 0)
+    bg_pos[1] = min(max(bg_pos[1], 0-(bg_image.get_height()-HEIGHT)), 0)
+    screen.blit(bg_image, (bg_pos))
 
     player.update(dt, screen)
     player.draw(screen)
