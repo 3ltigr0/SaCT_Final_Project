@@ -107,6 +107,7 @@ while running:
     
 
     if gameover:
+        player.twinkile(False)
         draw_text("GAME OVER", 100, (WIDTH/2 - 300, HEIGHT/2 - 50), (255,255,255))
         txt = "Time: {:.1f}  Bullets: {}".format(score, len(bullets))
         draw_text(txt, 32, (WIDTH/2 - 150, HEIGHT/2 + 50), (255,255,255))
@@ -135,12 +136,19 @@ while running:
         if player.invinciblity == True:
             time_for_invincible += dt
 
-            if time_for_invincible > 1000: # 1초 후 폭발 효과 지우기
+            # 반짝반짝
+            if time.time()*10 % 2 < 1:
+                player.twinkile(True)
+            else:
+                player.twinkile(False)
+
+            if time_for_invincible > 500: # 0.5초 후 폭발 효과 지우기
                 player.explode(False)
 
             if time_for_invincible > 2000:
                 player.invincible(False)
                 time_for_invincible = 0
+                player.twinkile(False)
         
         time_for_adding_bullets += dt
         if time_for_adding_bullets > 1000:

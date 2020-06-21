@@ -19,8 +19,7 @@ class Player:
         #무적
         self.invinciblity = False
 
-    def draw(self, screen):
-        
+    def draw(self, screen):        
         if self.to == [-1, -1]: self.angle = 45
         elif self.to == [-1, 0]: self.angle = 90
         elif self.to == [-1, 1]: self.angle = 135
@@ -33,6 +32,7 @@ class Player:
         rotated = pygame.transform.rotate(self.image, self.angle)
         calib_pos = (self.pos[0] - rotated.get_width()/2,
                      self.pos[1] - rotated.get_height()/2)
+        
         screen.blit(rotated, calib_pos)
         
         if self.exploded == True:
@@ -60,3 +60,13 @@ class Player:
     # 생명력 감소
     def minuslife(self):
         self.life -= 1
+    
+    # 비행기 반짝
+    def twinkile(self, value):
+        if value:
+            self.image = pygame.image.load('player_twinkle.png')
+            self.image = pygame.transform.scale(self.image, (64, 64))
+
+        else:
+            self.image = pygame.image.load('player.png')
+            self.image = pygame.transform.scale(self.image, (64, 64))
