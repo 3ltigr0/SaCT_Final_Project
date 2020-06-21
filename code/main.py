@@ -110,8 +110,9 @@ while running:
     if not gameover:
         for b in bullets:
             if collision(player, b):
-                gameover = True
                 hitsound.play() #충돌 효과음 재생
+                player.explode() #폭발
+                gameover = True
                 #time.sleep(2)
                 #running = False
         

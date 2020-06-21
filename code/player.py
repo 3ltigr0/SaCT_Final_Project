@@ -10,6 +10,11 @@ class Player:
         self.acc = [0, 0]
         self.angle = 0
 
+        # Explosion
+        self.expl_effect = pygame.image.load('flame.png')
+        self.expl_effect = pygame.transform.scale(self.expl_effect, (64, 64))
+        self.exploded = False
+
     def draw(self, screen):
         
         if self.to == [-1, -1]: self.angle = 45
@@ -25,6 +30,9 @@ class Player:
         calib_pos = (self.pos[0] - rotated.get_width()/2,
                      self.pos[1] - rotated.get_height()/2)
         screen.blit(rotated, calib_pos)
+        
+        if self.exploded == True:
+            screen.blit(self.expl_effect, (self.pos[0] - 32, self.pos[1] - 32)) # 터지는 그림 효과
     
     def goto(self, x, y):
         self.to[0] += x
@@ -36,3 +44,6 @@ class Player:
         self.pos[1] = self.pos[1] + dt*self.to[1]*0.6
         self.pos[0] = min(max(self.pos[0], 32), width-32)
         self.pos[1] = min(max(self.pos[1], 32), height-32)
+
+    def explode(self): #게임 종료시 호출
+        self.exploded = True
