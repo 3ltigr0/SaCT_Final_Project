@@ -45,7 +45,7 @@ maxlife = player.life # 최대 생명력
 
 bullets = []
 for i in range(10):
-    bullets.append(Bullet(0, rnd.random()*HEIGHT, rnd.random()-0.5, rnd.random()-0.5))
+    bullets.append(Bullet(0, rnd.random()*HEIGHT, rnd.random()-0.5, rnd.random()-0.5, rnd.randint(0,2)))
 
 time_for_adding_bullets = 0
 time_for_invincible = 0
@@ -156,5 +156,5 @@ while running:
         
         time_for_adding_bullets += dt
         if time_for_adding_bullets > 1000:
-            bullets.append(Bullet(0, rnd.random()*HEIGHT, rnd.random()-0.5, rnd.random()-0.5))
+            bullets.append(Bullet(0, rnd.random()*HEIGHT, rnd.random()-0.5, rnd.random()-0.5, rnd.randint(0,2)))
             time_for_adding_bullets -= 1000
