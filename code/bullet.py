@@ -7,6 +7,7 @@ class Bullet:
         self.pos = [x, y]
         self.to = [to_x, to_y] # 속도
         self.radius = (7, 14, 21)
+        self.damage = (3, 2, 1)
         #self.color = [190,0,0] # red
         #self.color_hsv = [random.random(),1,1]
 

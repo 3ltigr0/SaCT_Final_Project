@@ -5,7 +5,7 @@ class Player:
     def __init__(self, x, y):
         self.image = pygame.image.load('player.png')
         self.image = pygame.transform.scale(self.image, (64, 64))
-        self.life = 5 # 생명력
+        self.life = 10 # 생명력
         self.pos = [x, y]
         self.to = [0, 0]
         self.acc = [0, 0]
@@ -58,8 +58,8 @@ class Player:
         self.invinciblity = value
 
     # 생명력 감소
-    def minuslife(self):
-        self.life -= 1
+    def minuslife(self, value):
+        self.life -= value
     
     # 비행기 반짝
     def twinkile(self, value):

@@ -7,7 +7,7 @@ from bullet import Bullet
 
 def collision(obj1, obj2):
     if math.sqrt((obj1.pos[0] - obj2.pos[0]) ** 2 + 
-                 (obj1.pos[1] - obj2.pos[1]) ** 2) < 20:
+                 (obj1.pos[1] - obj2.pos[1]) ** 2) < 13 + obj2.radius[obj2.kind]: # 총알 크기에 따른 충돌 거리 수정
         return True
     return False
 
@@ -109,7 +109,7 @@ while running:
 
     if gameover:
         player.twinkile(False)
-        draw_text("GAME OVER", 100, (WIDTH/2 - 300, HEIGHT/2 - 50), (255,255,255))
+        draw_text("GAME OVER", 100, (int(WIDTH/2 - 300), int(HEIGHT/2 - 50)), (255,255,255))
         txt = "Time: {:.1f}  Bullets: {}".format(score, len(bullets))
         draw_text(txt, 32, (WIDTH/2 - 150, HEIGHT/2 + 50), (255,255,255))
     else:
@@ -118,7 +118,7 @@ while running:
         draw_text(txt, 32, (10, 10), (255,255,255))
         # 생명력 막대기
         pygame.draw.rect(screen, (255, 0, 0), (475, 11, 100, 30)) # 전체 생명력
-        pygame.draw.rect(screen, (0, 255, 0), (475, 11, 100/maxlife*player.life, 30)) # 현재 생명력
+        pygame.draw.rect(screen, (0, 255, 0), (475, 11, int(100/maxlife*player.life), 30)) # 현재 생명력
 
     pygame.display.update() #화면에 새로운 그림을 그린다 (화면을 갱신한다)
 
@@ -127,10 +127,10 @@ while running:
             if collision(player, b) and player.invinciblity == False:
                 hitsound.play() #충돌 효과음 재생
                 player.explode(True) #폭발
-                player.minuslife() #생명력 감소
+                player.minuslife(b.damage[b.kind]) #생명력 감소
                 player.invincible(True) # 무적
 
-                if player.life == 0:
+                if player.life <= 0:
                     explodesound.play() #폭발 효과음 재생
                     gameover = True
                 #time.sleep(2)
