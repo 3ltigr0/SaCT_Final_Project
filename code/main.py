@@ -4,6 +4,7 @@ import math
 import pygame
 from player import Player
 from bullet import Bullet
+from rank import Rank
 
 def collision(obj1, obj2):
     if math.sqrt((obj1.pos[0] - obj2.pos[0]) ** 2 + 
@@ -12,9 +13,12 @@ def collision(obj1, obj2):
     return False
 
 def draw_text(txt, size, pos, color):
+    intpos = []
+    intpos.append(int(pos[0]))
+    intpos.append(int(pos[1]))
     font = pygame.font.Font('freesansbold.ttf', size)
     r = font.render(txt, True, color)
-    screen.blit(r, pos)
+    screen.blit(r, intpos)
 
 # Initialize the pygame
 pygame.mixer.pre_init(44100, -16, 2, 2048)
@@ -33,6 +37,10 @@ pygame.mixer.music.set_volume(0.6)
 hitsound = pygame.mixer.Sound('Crash_Steel_Pipe.ogg')
 explodesound = pygame.mixer.Sound('Big_Explosion_Cut_Off.ogg')
 
+# Rank
+ranking = Rank()
+rank_tog = 0
+
 pygame.display.set_caption("총알 피하기")
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -49,6 +57,7 @@ for i in range(10):
 
 time_for_adding_bullets = 0
 time_for_invincible = 0
+time_for_rankblink = 0
 
 start_time = time.time()
 
@@ -60,6 +69,9 @@ bg_pos = [0 - (bg_image.get_width()-WIDTH)/2, 0 - (bg_image.get_height()-HEIGHT)
 running = True
 gameover = False
 score = 0
+ranktxt = []
+rankcolor = []
+ranked = 999
 while running:
 
     dt = clock.tick(FPS)
@@ -96,8 +108,8 @@ while running:
     # 배경 그림이 비행기의 움직임에 반응하여 이동
     bg_pos[0] -= player.to[0] + dt*player.to[0]*0.5
     bg_pos[1] -= player.to[1] + dt*player.to[1]*0.3
-    bg_pos[0] = min(max(bg_pos[0], 0-(bg_image.get_width()-WIDTH)), 0)
-    bg_pos[1] = min(max(bg_pos[1], 0-(bg_image.get_height()-HEIGHT)), 0)
+    bg_pos[0] = int(min(max(bg_pos[0], 0-(bg_image.get_width()-WIDTH)), 0))
+    bg_pos[1] = int(min(max(bg_pos[1], 0-(bg_image.get_height()-HEIGHT)), 0))
     screen.blit(bg_image, (bg_pos))
 
     player.update(dt, screen)
@@ -109,9 +121,36 @@ while running:
 
     if gameover:
         player.twinkile(False)
-        draw_text("GAME OVER", 100, (int(WIDTH/2 - 300), int(HEIGHT/2 - 50)), (255,255,255))
+        draw_text("GAME OVER", 100, (WIDTH/2 - 300, HEIGHT/2 - 300), (255,255,255))
         txt = "Time: {:.1f}  Bullets: {}".format(score, len(bullets))
-        draw_text(txt, 32, (WIDTH/2 - 150, HEIGHT/2 + 50), (255,255,255))
+        draw_text(txt, 32, (WIDTH/2 - 150, HEIGHT/2 - 200), (255,255,255))
+        if rank_tog == 0:
+            ranking.setrec(score)
+            ranking.save()
+            rank_tog = 1
+        
+            for i in range(10):
+                if len(ranking.ranklist) > i:
+                    ranktxt.append("{}: {:.1f} ".format(i+1, ranking.ranklist[i]))
+                else:
+                    break
+            if score in ranking.ranklist:
+                    ranked = ranking.ranklist.index(score)
+
+        draw_text("Top 10", 32 , (WIDTH/2 - 40, HEIGHT/2 - 150), (255, 255, 255))
+        for i in range(10):
+            if len(ranktxt) > i:
+                if ranked == i:
+                    if time_for_rankblink <= 3000:
+                        if time.time()*10 % 2 < 1:
+                            draw_text(ranktxt[i], 32 , (WIDTH/2 - 40, HEIGHT/2 - 100 + i*50), (255,255,0))
+                    else:
+                        draw_text(ranktxt[i], 32 , (WIDTH/2 - 40, HEIGHT/2 - 100 + i*50), (255,255,0))
+                    time_for_rankblink += dt
+                else:
+                    draw_text(ranktxt[i], 32 , (WIDTH/2 - 40, HEIGHT/2 - 100 + i*50), (255, 255, 255))
+            else:
+                break
     else:
         score = time.time() - start_time
         txt = "Time: {:.1f}  Bullets: {} Life: {}".format(score, len(bullets), player.life) # Life: 생명력 숫자
