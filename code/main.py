@@ -59,6 +59,9 @@ time_for_adding_bullets = 0
 time_for_invincible = 0
 time_for_rankblink = 0
 
+twinkle_dt = 0 # dt 기준으로 반짝이는 시간 정하기
+blink_dt = 0 # dt 기준으로 깜빡이는 시간 정하기
+
 start_time = time.time()
 
 #bg_pos = 0
@@ -148,11 +151,14 @@ while running:
             if len(ranktxt) > i:
                 if ranked == i:
                     if time_for_rankblink <= 3000:
-                        if time.time()*10 % 2 < 1:
+                        blink_dt += dt
+                        if blink_dt < 100:
                             draw_text(ranktxt[i], 32 , (WIDTH/2 - 80, HEIGHT/2 - 100 + i*50), (255,255,0))
+                        elif blink_dt >= 200:
+                            blink_dt -= 200
+                        time_for_rankblink += dt
                     else:
                         draw_text(ranktxt[i], 32 , (WIDTH/2 - 80, HEIGHT/2 - 100 + i*50), (255,255,0))
-                    time_for_rankblink += dt
                 else:
                     draw_text(ranktxt[i], 32 , (WIDTH/2 - 80, HEIGHT/2 - 100 + i*50), (255, 255, 255))
             else:
@@ -188,12 +194,18 @@ while running:
         # 무적    
         if player.invinciblity == True:
             time_for_invincible += dt
+            twinkle_dt += dt
 
             # 반짝반짝
-            if score*10 % 2 < 1:
+            if twinkle_dt < 100:
                 player.twinkile(True)
-            else:
+                
+            elif twinkle_dt < 200:
                 player.twinkile(False)
+                
+            else:
+                player.twinkile(True)
+                twinkle_dt -= 200
 
             if time_for_invincible > 500: # 0.5초 후 폭발 효과 지우기
                 player.explode(False)
@@ -202,6 +214,7 @@ while running:
                 player.invincible(False)
                 time_for_invincible = 0
                 player.twinkile(False)
+                twinkle_dt = 0
         
         time_for_adding_bullets += dt
         if time_for_adding_bullets > 1000:
