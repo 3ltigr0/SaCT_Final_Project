@@ -27,7 +27,7 @@ bg_image = pygame.image.load('bg.jpg')
 # Background music
 pygame.mixer.music.load('bgm.wav')
 pygame.mixer.music.play(-1)
-pygame.mixer.music.set_volume(0.75)
+pygame.mixer.music.set_volume(0.6)
 
 # SFX
 hitsound = pygame.mixer.Sound('Crash_Steel_Pipe.ogg')
@@ -41,6 +41,7 @@ clock = pygame.time.Clock()
 FPS=60
 
 player = Player(WIDTH/2, HEIGHT/2)
+maxlife = player.life # 최대 생명력
 
 bullets = []
 for i in range(10):
@@ -113,8 +114,11 @@ while running:
         draw_text(txt, 32, (WIDTH/2 - 150, HEIGHT/2 + 50), (255,255,255))
     else:
         score = time.time() - start_time
-        txt = "Time: {:.1f}  Bullets: {} Life: {}".format(score, len(bullets), player.life)
+        txt = "Time: {:.1f}  Bullets: {} Life: {}".format(score, len(bullets), player.life) # Life: 생명력 숫자
         draw_text(txt, 32, (10, 10), (255,255,255))
+        # 생명력 막대기
+        pygame.draw.rect(screen, (255, 0, 0), (475, 11, 100, 30)) # 전체 생명력
+        pygame.draw.rect(screen, (0, 255, 0), (475, 11, 100/maxlife*player.life, 30)) # 현재 생명력
 
     pygame.display.update() #화면에 새로운 그림을 그린다 (화면을 갱신한다)
 
