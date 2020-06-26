@@ -14,8 +14,8 @@ def collision(obj1, obj2):
 
 def draw_text(txt, size, pos, color):
     intpos = []
-    intpos.append(int(pos[0]))
-    intpos.append(int(pos[1]))
+    intpos.append(round(pos[0]))
+    intpos.append(round(pos[1]))
     font = pygame.font.Font('freesansbold.ttf', size)
     r = font.render(txt, True, color)
     screen.blit(r, intpos)
@@ -108,8 +108,8 @@ while running:
     # 배경 그림이 비행기의 움직임에 반응하여 이동
     bg_pos[0] -= player.to[0] + dt*player.to[0]*0.5
     bg_pos[1] -= player.to[1] + dt*player.to[1]*0.3
-    bg_pos[0] = int(min(max(bg_pos[0], 0-(bg_image.get_width()-WIDTH)), 0))
-    bg_pos[1] = int(min(max(bg_pos[1], 0-(bg_image.get_height()-HEIGHT)), 0))
+    bg_pos[0] = round(min(max(bg_pos[0], 0-(bg_image.get_width()-WIDTH)), 0))
+    bg_pos[1] = round(min(max(bg_pos[1], 0-(bg_image.get_height()-HEIGHT)), 0))
     screen.blit(bg_image, (bg_pos))
 
     player.update(dt, screen)
@@ -128,36 +128,46 @@ while running:
             ranking.setrec(score)
             ranking.save()
             rank_tog = 1
-        
+
+            # 랭킹을 텍스트에 넣어주기
             for i in range(10):
                 if len(ranking.ranklist) > i:
-                    ranktxt.append("{}: {:.1f} ".format(i+1, ranking.ranklist[i]))
+                    if i == 9:
+                        ranktxt.append("{}: {:.3f} ".format(i+1, ranking.ranklist[i]))
+                    else:
+                        ranktxt.append("  {}: {:.3f} ".format(i+1, ranking.ranklist[i]))
                 else:
                     break
-            if score in ranking.ranklist:
-                    ranked = ranking.ranklist.index(score)
 
+            # 랭크된 경우 강조를 위해 내 점수 찾기
+            if score in ranking.ranklist:
+                    ranked = ranking.ranklist.index(score) # 동점자 발생한 경우 두 점수 중 높은 순위의 점수를 강조 (틱레이트가 60이고 score가 float 이므로 동점자가 발생하기 쉽지 않다고 생각)
+        # Top 10 출력
         draw_text("Top 10", 32 , (WIDTH/2 - 40, HEIGHT/2 - 150), (255, 255, 255))
         for i in range(10):
             if len(ranktxt) > i:
                 if ranked == i:
                     if time_for_rankblink <= 3000:
                         if time.time()*10 % 2 < 1:
-                            draw_text(ranktxt[i], 32 , (WIDTH/2 - 40, HEIGHT/2 - 100 + i*50), (255,255,0))
+                            draw_text(ranktxt[i], 32 , (WIDTH/2 - 80, HEIGHT/2 - 100 + i*50), (255,255,0))
                     else:
-                        draw_text(ranktxt[i], 32 , (WIDTH/2 - 40, HEIGHT/2 - 100 + i*50), (255,255,0))
+                        draw_text(ranktxt[i], 32 , (WIDTH/2 - 80, HEIGHT/2 - 100 + i*50), (255,255,0))
                     time_for_rankblink += dt
                 else:
-                    draw_text(ranktxt[i], 32 , (WIDTH/2 - 40, HEIGHT/2 - 100 + i*50), (255, 255, 255))
+                    draw_text(ranktxt[i], 32 , (WIDTH/2 - 80, HEIGHT/2 - 100 + i*50), (255, 255, 255))
             else:
                 break
     else:
         score = time.time() - start_time
-        txt = "Time: {:.1f}  Bullets: {} Life: {}".format(score, len(bullets), player.life) # Life: 생명력 숫자
+        txt = "Time: {:.1f}".format(score)
         draw_text(txt, 32, (10, 10), (255,255,255))
+        txt = "Bullets: {}".format(len(bullets))
+        draw_text(txt, 32, (200, 10), (255,255,255))
+        txt = "Life: {}".format(player.life) # Life: 생명력 숫자
+        draw_text(txt, 32, (400, 10), (255,255,255))
         # 생명력 막대기
-        pygame.draw.rect(screen, (255, 0, 0), (475, 11, 100, 30)) # 전체 생명력
-        pygame.draw.rect(screen, (0, 255, 0), (475, 11, int(100/maxlife*player.life), 30)) # 현재 생명력
+        pygame.draw.rect(screen, (255, 0, 0), (550, 11, 100, 30)) # 전체 생명력
+        pygame.draw.rect(screen, (0, 255, 0), (550, 11, int(100/maxlife*player.life), 30)) # 현재 생명력
 
     pygame.display.update() #화면에 새로운 그림을 그린다 (화면을 갱신한다)
 
@@ -166,7 +176,7 @@ while running:
             if collision(player, b) and player.invinciblity == False:
                 hitsound.play() #충돌 효과음 재생
                 player.explode(True) #폭발
-                player.minuslife(b.damage[b.kind]) #생명력 감소
+                player.minuslife(b.getdamage()) #생명력 감소
                 player.invincible(True) # 무적
 
                 if player.life <= 0:
@@ -180,7 +190,7 @@ while running:
             time_for_invincible += dt
 
             # 반짝반짝
-            if time.time()*10 % 2 < 1:
+            if score*10 % 2 < 1:
                 player.twinkile(True)
             else:
                 player.twinkile(False)

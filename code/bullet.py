@@ -7,7 +7,7 @@ class Bullet:
         self.pos = [x, y]
         self.to = [to_x, to_y] # 속도
         self.radius = (7, 14, 21)
-        self.damage = (1, 2, 3)
+        self.damage = (3, 2, 1)
         #self.color = [190,0,0] # red
         #self.color_hsv = [random.random(),1,1]
 
@@ -23,4 +23,7 @@ class Bullet:
         self.pos[1] = (self.pos[1] + dt*self.to[1]) % height
         pos_int = (int(self.pos[0]), int(self.pos[1]))
         pygame.draw.circle(screen, self.color[self.kind], pos_int, self.radius[self.kind])
+
+    def getdamage(self):
+        return self.damage[self.kind]
     
